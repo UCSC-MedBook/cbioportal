@@ -30,26 +30,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.mskcc.cbio.portal.scripts;
+package org.mskcc.cbio.portal.web_api;
 
-import org.mskcc.cbio.portal.dao.DaoSampleList;
-import org.mskcc.cbio.portal.model.SampleList;
-import org.mskcc.cbio.portal.util.ProgressMonitor;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.transaction.TransactionConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import static org.junit.Assert.*;
 
 /**
- * Command Line Tool to Export All Sample Lists to the Console.
+ * JUnit test for GetPatientLists class.
  */
-public class GetAllSampleLists {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath:/applicationContext-dao.xml" })
+@TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
+@Transactional
+public class TestGetPatientList {
 
-    public static void main(String[] args) throws Exception {
-        ProgressMonitor.setConsoleMode(true);
-        DaoSampleList daoSampleList = new DaoSampleList();
-        ArrayList <SampleList> sampleListMaster = daoSampleList.getAllSampleLists();
-        for (SampleList sampleList:  sampleListMaster) {
-            System.out.println (sampleList.getSampleListId() + ": "
-                    + sampleList.getStableId() + ": " + sampleList.getName());
-        }
-    }
+   @Test
+   public void testGetPatientList() throws Exception {
+
+      String[] patientList = GetPatientLists.getPatientListsAsTable("study_tcga_pub").split("\n");
+      assertTrue(patientList[1].startsWith("study_tcga_pub_all\tAll Tumors\tAll tumor samples (14 samples)\t1\tTCGA-A1-A0SB-01"));
+   }
 }

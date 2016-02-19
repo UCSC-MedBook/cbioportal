@@ -90,8 +90,8 @@ public class MutationDataServlet extends HttpServlet
 
 		try
 		{
-			// generate list by processing possible valid sample list parameters
-			ArrayList<String> targetSampleList = this.getSampleList(request);
+			// generate list by processing possible valid patient list parameters
+			ArrayList<String> targetSampleList = this.getPatientList(request);
 
 			for (String profileId : geneticProfileList)
 			{
@@ -120,64 +120,64 @@ public class MutationDataServlet extends HttpServlet
 	}
 
 	/**
-	 * Generates a sample list by processing related request parameters,
-	 * which are sampleList, sampleSetId and sampleIdsKey. If none of these
+	 * Generates a patient list by processing related request parameters,
+	 * which are patientList, patientSetId and patientIdsKey. If none of these
 	 * parameters are valid, then this method will return an empty list.
 	 *
 	 * @param request   servlet request containing parameters
-	 * @return          a list of samples 
+	 * @return          a list of patients
 	 * @throws DaoException
 	 */
-	protected ArrayList<String> getSampleList(HttpServletRequest request) throws DaoException
+	protected ArrayList<String> getPatientList(HttpServletRequest request) throws DaoException
 	{
-		DaoSampleList daoSampleList = new DaoSampleList();
+		DaoPatientList daoPatientList = new DaoPatientList();
 
-		String sampleListStr = request.getParameter("caseList");
-		String sampleSetId = request.getParameter("caseSetId");
-		String sampleIdsKey = request.getParameter("caseIdsKey");
+		String patientListStr = request.getParameter("caseList");
+		String patientSetId = request.getParameter("caseSetId");
+		String patientIdsKey = request.getParameter("caseIdsKey");
 
-		ArrayList<String> sampleList;
+		ArrayList<String> patientList;
 
-		// first check if sampleSetId param provided
-		if (sampleSetId != null &&
-		    sampleSetId.length() != 0 &&
-		    !sampleSetId.equals("-1"))
+		// first check if patientSetId param provided
+		if (patientSetId != null &&
+		    patientSetId.length() != 0 &&
+		    !patientSetId.equals("-1"))
 		{
-			sampleList = new ArrayList<String>();
+			patientList = new ArrayList<String>();
 
-			// fetch a sample list for each sample set id
-			// (this allows providing more than one sampleSetId)
-			for (String id : this.parseValues(sampleSetId))
+			// fetch a patient list for each patient set id
+			// (this allows providing more than one patientSetId)
+			for (String id : this.parseValues(patientSetId))
 			{
-				SampleList list = daoSampleList.getSampleListByStableId(id);
+				PatientList list = daoPatientList.getPatientListByStableId(id);
 
 				if (list != null)
 				{
-					sampleList.addAll(list.getSampleList());
+					patientList.addAll(list.getPatientList());
 				}
 			}
 		}
-		// if there is no sampleSetId, then check for sampleIdsKey param
-		else if(sampleIdsKey != null &&
-		        sampleIdsKey.length() != 0)
+		// if there is no patientSetId, then check for patientIdsKey param
+		else if(patientIdsKey != null &&
+		        patientIdsKey.length() != 0)
 		{
-			sampleList = new ArrayList<String>();
+			patientList = new ArrayList<String>();
 
-			// fetch a sample list for each sample ids key
-			// (this allows providing more than one sampleIdsKey)
-			for (String key : this.parseValues(sampleIdsKey))
+			// fetch a patient list for each patient ids key
+			// (this allows providing more than one patientIdsKey)
+			for (String key : this.parseValues(patientIdsKey))
 			{
-				sampleList.addAll(this.parseValues(
-					SampleSetUtil.getSampleIds(key)));
+				patientList.addAll(this.parseValues(
+					PatientSetUtil.getPatientIds(key)));
 			}
 		}
 		else
 		{
-			// plain list of samples provided, just parse the values
-			sampleList = this.parseValues(sampleListStr);
+			// plain list of patients provided, just parse the values
+			patientList = this.parseValues(patientListStr);
 		}
 
-		return sampleList;
+		return patientList;
 	}
 
 	/**

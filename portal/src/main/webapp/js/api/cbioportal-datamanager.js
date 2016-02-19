@@ -397,10 +397,10 @@ window.initDatamanager = function (genetic_profile_ids, oql_query, cancer_study_
 			'getCaseIdsKey': function() {
 				return case_set_properties.case_ids_key;
 			},
-			'getSampleSetName': function() {
+			'getPatientSetName': function() {
 				return case_set_properties.case_set_name;
 			},
-			'getSampleSetDescription': function() {
+			'getPatientSetDescription': function() {
 				return case_set_properties.case_set_description;
 			},
 						'getPatientSampleIdMap': (function() {

@@ -29,9 +29,12 @@ drop table IF EXISTS interaction;
 drop table IF EXISTS clinical_attribute;
 drop table IF EXISTS entity_attribute;
 drop table IF EXISTS attribute_metadata;
+drop table IF EXISTS mutation_frequency;
 drop table if EXISTS mutation_count;
 drop table IF EXISTS mutation;
 drop table IF EXISTS mutation_event;
+drop table IF EXISTS micro_rna;
+drop table IF EXISTS micro_rna_alteration;
 drop table IF EXISTS sample_profile;
 drop table IF EXISTS genetic_profile_samples;
 drop table IF EXISTS genetic_alteration;
@@ -40,9 +43,9 @@ drop table IF EXISTS uniprot_id_mapping;
 drop table IF EXISTS gene_alias;
 drop table IF EXISTS gene;
 drop table IF EXISTS clinical_sample;
-drop table IF EXISTS sample_list_list;
+drop table IF EXISTS patient_list_list;
 drop table IF EXISTS sample;
-drop table IF EXISTS sample_list;
+drop table IF EXISTS patient_list;
 drop table IF EXISTS clinical_patient;
 drop table IF EXISTS patient;
 drop table IF EXISTS authorities;
@@ -51,7 +54,6 @@ drop table IF EXISTS entity_link;
 drop table IF EXISTS entity;
 drop table IF EXISTS cancer_study;
 drop table IF EXISTS type_of_cancer;
-drop table IF EXISTS info;
 -- --------------------------------------------------------
 
 --
@@ -166,9 +168,9 @@ CREATE TABLE `sample` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `sample_list`
+-- Table structure for table `patient_list`
 --
-CREATE TABLE `sample_list` (
+CREATE TABLE `patient_list` (
   `LIST_ID` int(11) NOT NULL auto_increment,
   `STABLE_ID` varchar(255) NOT NULL,
   `CATEGORY` varchar(255) NOT NULL,
@@ -183,13 +185,14 @@ CREATE TABLE `sample_list` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `sample_list_list`
+-- Table structure for table `patient_list_list`
 --
-CREATE TABLE `sample_list_list` (
+-- TODO rename the PATIENT_ID column, which is misleading
+CREATE TABLE `patient_list_list` (
   `LIST_ID` int(11) NOT NULL,
-  `SAMPLE_ID` int(11) NOT NULL,
-  PRIMARY KEY  (`LIST_ID`,`SAMPLE_ID`),
-  FOREIGN KEY (`SAMPLE_ID`) REFERENCES `sample` (`INTERNAL_ID`) ON DELETE CASCADE
+  `PATIENT_ID` int(11) NOT NULL,
+  PRIMARY KEY  (`LIST_ID`,`PATIENT_ID`),
+  FOREIGN KEY (`PATIENT_ID`) REFERENCES `sample` (`INTERNAL_ID`) ON DELETE CASCADE
 );
 
 -- --------------------------------------------------------
@@ -288,6 +291,26 @@ CREATE TABLE `sample_profile` (
 
 -- --------------------------------------------------------
 
+CREATE TABLE `micro_rna_alteration` (
+  `GENETIC_PROFILE_ID` int(11) NOT NULL,
+  `MICRO_RNA_ID` varchar(50) NOT NULL,
+  `VALUES` longtext NOT NULL,
+  UNIQUE KEY `QUICK_LOOK_UP1` (`GENETIC_PROFILE_ID`,`MICRO_RNA_ID`),
+  FOREIGN KEY (`GENETIC_PROFILE_ID`) REFERENCES `genetic_profile` (`GENETIC_PROFILE_ID`) ON DELETE CASCADE
+);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `micro_rna`
+--
+CREATE TABLE `micro_rna` (
+  `ID` varchar(50) NOT NULL,
+  `VARIANT_ID` varchar(50) NOT NULL
+);
+
+-- --------------------------------------------------------
+
 CREATE TABLE `mutation_event` (
   `MUTATION_EVENT_ID` int(255) NOT NULL auto_increment,
   `ENTREZ_GENE_ID` int(255) NOT NULL,
@@ -374,6 +397,18 @@ CREATE TABLE `mutation_count` (
   FOREIGN KEY (`GENETIC_PROFILE_ID`) REFERENCES `genetic_profile` (`GENETIC_PROFILE_ID`) ON DELETE CASCADE,
   FOREIGN KEY (`SAMPLE_ID`) REFERENCES `sample` (`INTERNAL_ID`) ON DELETE CASCADE
 );
+
+--
+-- Table structure for table `mutation_frequency`
+--
+CREATE TABLE `mutation_frequency` (
+  `ENTREZ_GENE_ID` int(11) NOT NULL,
+  `SOMATIC_MUTATION_RATE` double NOT NULL,
+  `CANCER_STUDY_ID` int(11) NOT NULL,
+  FOREIGN KEY (`CANCER_STUDY_ID`) REFERENCES `cancer_study` (`CANCER_STUDY_ID`) ON DELETE CASCADE,
+  FOREIGN KEY (`ENTREZ_GENE_ID`) REFERENCES `gene` (`ENTREZ_GENE_ID`)
+);
+
 
 -- --------------------------------------------------------
 
@@ -721,9 +756,3 @@ CREATE TABLE `clinical_event_data` (
   `VALUE` varchar(5000) NOT NULL,
   FOREIGN KEY (`CLINICAL_EVENT_ID`) REFERENCES `clinical_event` (`CLINICAL_EVENT_ID`) ON DELETE CASCADE
 );
-
-CREATE TABLE `info` (
-    `DB_SCHEMA_VERSION` varchar(8)
-);
--- THIS MUST BE KEPT IN SYNC WITH db.version PROPERTY IN pom.xml
-INSERT INTO info VALUES ('1.1.0');

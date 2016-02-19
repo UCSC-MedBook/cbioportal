@@ -158,9 +158,9 @@ public class NetworkServlet extends HttpServlet {
                 // and get the list of genes in network
                 xdebug.logMsg(this, "Retrieving data from CGDS...");
 
-                // Get sample ids
-                Set<String> targetSampleIds = getSampleIds(req, cancerStudyId);
-                List<Integer> internalSampleIds = InternalIdUtil.getInternalNonNormalSampleIds(cancerStudy.getInternalId(), new ArrayList<String>(targetSampleIds));
+                // Get patient ids
+                Set<String> targetPatientIds = getPatientIds(req, cancerStudyId);
+                List<Integer> internalSampleIds = InternalIdUtil.getInternalNonNormalSampleIds(cancerStudy.getInternalId(), new ArrayList<String>(targetPatientIds));
 
                 //  Get User Selected Genetic Profiles
                 Set<GeneticProfile> geneticProfileSet = getGeneticProfileSet(req, cancerStudyId);
@@ -464,28 +464,28 @@ public class NetworkServlet extends HttpServlet {
         return alterPerc == null ? 0.0 : alterPerc;
     }
 
-    private Set<String> getSampleIds(HttpServletRequest req, String cancerStudyId)
+    private Set<String> getPatientIds(HttpServletRequest req, String cancerStudyId)
             throws ServletException, DaoException {
-    	String sampleIdsKey = req.getParameter(QueryBuilder.CASE_IDS_KEY);
-    	String strSampleIds = SampleSetUtil.getSampleIds(sampleIdsKey);
+    	String patientIdsKey = req.getParameter(QueryBuilder.CASE_IDS_KEY);
+    	String strPatientIds = PatientSetUtil.getPatientIds(patientIdsKey);
 
-        if (strSampleIds==null || strSampleIds.length()==0) {
-            String sampleSetId = req.getParameter(QueryBuilder.CASE_SET_ID);
+        if (strPatientIds==null || strPatientIds.length()==0) {
+            String patientSetId = req.getParameter(QueryBuilder.CASE_SET_ID);
                 //  Get Patient Sets for Selected Cancer Type
-                ArrayList<SampleList> sampleSets = GetSampleLists.getSampleLists(cancerStudyId);
-                for (SampleList ss : sampleSets) {
-                    if (ss.getStableId().equals(sampleSetId)) {
-                        strSampleIds = ss.getSampleListAsString();
+                ArrayList<PatientList> patientSets = GetPatientLists.getPatientLists(cancerStudyId);
+                for (PatientList ps : patientSets) {
+                    if (ps.getStableId().equals(patientSetId)) {
+                        strPatientIds = ps.getPatientListAsString();
                         break;
                     }
                 }
         }
-        String[] sampleArray = strSampleIds.split("\\s+");
-        Set<String> targetSampleIds = new HashSet<String>(sampleArray.length);
-        for (String sampleId : sampleArray) {
-            targetSampleIds.add(sampleId);
+        String[] patientArray = strPatientIds.split("\\s+");
+        Set<String> targetPatientIds = new HashSet<String>(patientArray.length);
+        for (String patientId : patientArray) {
+            targetPatientIds.add(patientId);
         }
-        return targetSampleIds;
+        return targetPatientIds;
     }
 
     private Set<GeneticProfile> getGeneticProfileSet(HttpServletRequest req, String cancerStudyId)

@@ -40,33 +40,33 @@ import java.util.*;
 /**
  * Data access object for patient_List table
  */
-public class DaoSampleList {
+public class DaoPatientList {
 
 	/**
-	 * Adds record to sample_list table.
+	 * Adds record to patient_list table.
 	 */
-    public int addSampleList(SampleList sampleList) throws DaoException {
+    public int addPatientList(PatientList patientList) throws DaoException {
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         int rows;
         try {
-            con = JdbcUtil.getDbConnection(DaoSampleList.class);
+            con = JdbcUtil.getDbConnection(DaoPatientList.class);
 
-            pstmt = con.prepareStatement("INSERT INTO sample_list (`STABLE_ID`, `CANCER_STUDY_ID`, `NAME`, `CATEGORY`," +
+            pstmt = con.prepareStatement("INSERT INTO patient_list (`STABLE_ID`, `CANCER_STUDY_ID`, `NAME`, `CATEGORY`," +
                     "`DESCRIPTION`)" + " VALUES (?,?,?,?,?)");
-            pstmt.setString(1, sampleList.getStableId());
-            pstmt.setInt(2, sampleList.getCancerStudyId());
-            pstmt.setString(3, sampleList.getName());
-            pstmt.setString(4, sampleList.getSampleListCategory().getCategory());
-            pstmt.setString(5, sampleList.getDescription());
+            pstmt.setString(1, patientList.getStableId());
+            pstmt.setInt(2, patientList.getCancerStudyId());
+            pstmt.setString(3, patientList.getName());
+            pstmt.setString(4, patientList.getPatientListCategory().getCategory());
+            pstmt.setString(5, patientList.getDescription());
             rows = pstmt.executeUpdate();
-   			int listListRow = addSampleListList(sampleList, con);
+   			int listListRow = addPatientListList(patientList, con);
    			rows = (listListRow != -1) ? (rows + listListRow) : rows;
         } catch (SQLException e) {
             throw new DaoException(e);
         } finally {
-            JdbcUtil.closeAll(DaoSampleList.class, con, pstmt, rs);
+            JdbcUtil.closeAll(DaoPatientList.class, con, pstmt, rs);
         }
         
         return rows;
@@ -75,146 +75,146 @@ public class DaoSampleList {
 	/**
 	 * Given a patient list by stable Id, returns a patient list.
 	 */
-    public SampleList getSampleListByStableId(String stableId) throws DaoException {
+    public PatientList getPatientListByStableId(String stableId) throws DaoException {
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
-            con = JdbcUtil.getDbConnection(DaoSampleList.class);
+            con = JdbcUtil.getDbConnection(DaoPatientList.class);
             pstmt = con.prepareStatement
-                    ("SELECT * FROM sample_list WHERE STABLE_ID = ?");
+                    ("SELECT * FROM patient_list WHERE STABLE_ID = ?");
             pstmt.setString(1, stableId);
             rs = pstmt.executeQuery();
             if (rs.next()) {
-                SampleList sampleList = extractSampleList(rs);
-                sampleList.setSampleList(getSampleListList(sampleList, con));
-                return sampleList;
+                PatientList patientList = extractPatientList(rs);
+                patientList.setPatientList(getPatientListList(patientList, con));
+                return patientList;
             }
 			return null;
         } catch (SQLException e) {
             throw new DaoException(e);
         } finally {
-            JdbcUtil.closeAll(DaoSampleList.class, con, pstmt, rs);
+            JdbcUtil.closeAll(DaoPatientList.class, con, pstmt, rs);
         }
     }
 
 	/**
 	 * Given a patient list ID, returns a patient list.
 	 */
-    public SampleList getSampleListById(int id) throws DaoException {
+    public PatientList getPatientListById(int id) throws DaoException {
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
-            con = JdbcUtil.getDbConnection(DaoSampleList.class);
+            con = JdbcUtil.getDbConnection(DaoPatientList.class);
             pstmt = con.prepareStatement
-                    ("SELECT * FROM sample_list WHERE LIST_ID = ?");
+                    ("SELECT * FROM patient_list WHERE LIST_ID = ?");
             pstmt.setInt(1, id);
             rs = pstmt.executeQuery();
             if (rs.next()) {
-                SampleList sampleList = extractSampleList(rs);
-				sampleList.setSampleList(getSampleListList(sampleList, con));
-                return sampleList;
+                PatientList patientList = extractPatientList(rs);
+				patientList.setPatientList(getPatientListList(patientList, con));
+                return patientList;
             }
 			return null;
         } catch (SQLException e) {
             throw new DaoException(e);
         } finally {
-            JdbcUtil.closeAll(DaoSampleList.class, con, pstmt, rs);
+            JdbcUtil.closeAll(DaoPatientList.class, con, pstmt, rs);
         }
     }
 
 	/**
 	 * Given a cancerStudyId, returns all patient list.
 	 */
-    public ArrayList<SampleList> getAllSampleLists( int cancerStudyId) throws DaoException {
+    public ArrayList<PatientList> getAllPatientLists( int cancerStudyId) throws DaoException {
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
-            con = JdbcUtil.getDbConnection(DaoSampleList.class);
+            con = JdbcUtil.getDbConnection(DaoPatientList.class);
 
             pstmt = con.prepareStatement
-                    ("SELECT * FROM sample_list WHERE CANCER_STUDY_ID = ? ORDER BY NAME");
+                    ("SELECT * FROM patient_list WHERE CANCER_STUDY_ID = ? ORDER BY NAME");
             pstmt.setInt(1, cancerStudyId);
             rs = pstmt.executeQuery();
-            ArrayList<SampleList> list = new ArrayList<SampleList>();
+            ArrayList<PatientList> list = new ArrayList<PatientList>();
             while (rs.next()) {
-                SampleList sampleList = extractSampleList(rs);
-                list.add(sampleList);
+                PatientList patientList = extractPatientList(rs);
+                list.add(patientList);
             }
 			// get patient list-list
-			for (SampleList sampleList : list) {
-				sampleList.setSampleList(getSampleListList(sampleList, con));
+			for (PatientList patientList : list) {
+				patientList.setPatientList(getPatientListList(patientList, con));
 			}
             return list;
         } catch (SQLException e) {
             throw new DaoException(e);
         } finally {
-            JdbcUtil.closeAll(DaoSampleList.class, con, pstmt, rs);
+            JdbcUtil.closeAll(DaoPatientList.class, con, pstmt, rs);
         }
     }
 
 	/**
 	 * Returns a list of all patient lists.
 	 */
-    public ArrayList<SampleList> getAllSampleLists() throws DaoException {
+    public ArrayList<PatientList> getAllPatientLists() throws DaoException {
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
-            con = JdbcUtil.getDbConnection(DaoSampleList.class);
+            con = JdbcUtil.getDbConnection(DaoPatientList.class);
             pstmt = con.prepareStatement
-                    ("SELECT * FROM sample_list");
+                    ("SELECT * FROM patient_list");
             rs = pstmt.executeQuery();
-            ArrayList<SampleList> list = new ArrayList<SampleList>();
+            ArrayList<PatientList> list = new ArrayList<PatientList>();
             while (rs.next()) {
-                SampleList sampleList = extractSampleList(rs);
-                list.add(sampleList);
+                PatientList patientList = extractPatientList(rs);
+                list.add(patientList);
             }
 			// get patient list-list
-			for (SampleList sampleList : list) {
-				sampleList.setSampleList(getSampleListList(sampleList, con));
+			for (PatientList patientList : list) {
+				patientList.setPatientList(getPatientListList(patientList, con));
 			}
             return list;
         } catch (SQLException e) {
             throw new DaoException(e);
         } finally {
-            JdbcUtil.closeAll(DaoSampleList.class, con, pstmt, rs);
+            JdbcUtil.closeAll(DaoPatientList.class, con, pstmt, rs);
         }
     }
 
 	/**
-	 * Clears all records from patient list & sample_list_list.
+	 * Clears all records from patient list & patient_list_list.
 	 */
     public void deleteAllRecords() throws DaoException {
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
-            con = JdbcUtil.getDbConnection(DaoSampleList.class);
-            pstmt = con.prepareStatement("TRUNCATE TABLE sample_list");
+            con = JdbcUtil.getDbConnection(DaoPatientList.class);
+            pstmt = con.prepareStatement("TRUNCATE TABLE patient_list");
             pstmt.executeUpdate();
-            pstmt = con.prepareStatement("TRUNCATE TABLE sample_list_list");
+            pstmt = con.prepareStatement("TRUNCATE TABLE patient_list_list");
             pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new DaoException(e);
         } finally {
-            JdbcUtil.closeAll(DaoSampleList.class, con, pstmt, rs);
+            JdbcUtil.closeAll(DaoPatientList.class, con, pstmt, rs);
         }
     }
 
 	/**
-	 * Given a patient list, gets list id from sample_list table
+	 * Given a patient list, gets list id from patient_list table
 	 */
-	private int getSampleListId(SampleList sampleList) throws DaoException {
+	private int getPatientListId(PatientList patientList) throws DaoException {
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
-            con = JdbcUtil.getDbConnection(DaoSampleList.class);
-            pstmt = con.prepareStatement("SELECT LIST_ID FROM sample_list WHERE STABLE_ID=?");
-            pstmt.setString(1, sampleList.getStableId());
+            con = JdbcUtil.getDbConnection(DaoPatientList.class);
+            pstmt = con.prepareStatement("SELECT LIST_ID FROM patient_list WHERE STABLE_ID=?");
+            pstmt.setString(1, patientList.getStableId());
             rs = pstmt.executeQuery();
             if (rs.next()) {
                 return rs.getInt("LIST_ID");
@@ -223,22 +223,22 @@ public class DaoSampleList {
         } catch (SQLException e) {
             throw new DaoException(e);
         } finally {
-            JdbcUtil.closeAll(DaoSampleList.class, con, pstmt, rs);
+            JdbcUtil.closeAll(DaoPatientList.class, con, pstmt, rs);
         }
 	}
 
 	/**
-	 * Adds record to sample_list_list.
+	 * Adds record to patient_list_list.
 	 */
-    private int addSampleListList(SampleList sampleList, Connection con) throws DaoException {
+    private int addPatientListList(PatientList patientList, Connection con) throws DaoException {
 		
 	// get patient list id
-	int sampleListId = getSampleListId(sampleList);
-	if (sampleListId == -1) {
+	int patientListId = getPatientListId(patientList);
+	if (patientListId == -1) {
             return -1;
         }
         
-        if (sampleList.getSampleList().isEmpty()) {
+        if (patientList.getPatientList().isEmpty()) {
             return 0;
         }
 
@@ -246,18 +246,18 @@ public class DaoSampleList {
         ResultSet rs = null;
         int skippedPatients = 0;
         try {
-            StringBuilder sql = new StringBuilder("INSERT INTO sample_list_list (`LIST_ID`, `SAMPLE_ID`) VALUES ");
+            StringBuilder sql = new StringBuilder("INSERT INTO patient_list_list (`LIST_ID`, `PATIENT_ID`) VALUES ");
             // NOTE - as of 12/12/14, patient lists contain sample ids
-            for (String sampleId : sampleList.getSampleList()) {
-                Sample sample = DaoSample.getSampleByCancerStudyAndSampleId(sampleList.getCancerStudyId(), sampleId);
+            for (String sampleId : patientList.getPatientList()) {
+                Sample sample = DaoSample.getSampleByCancerStudyAndSampleId(patientList.getCancerStudyId(), sampleId);
                 if (sample == null) {
-                    System.out.println("null sample: " + sampleId + ":" + sampleList.getStableId());
+                    System.out.println("null sample: " + sampleId + ":" + patientList.getStableId());
                     ++skippedPatients;
                     continue;
                 }
-                sql.append("('").append(sampleListId).append("','").append(sample.getInternalId()).append("'),");
+                sql.append("('").append(patientListId).append("','").append(sample.getInternalId()).append("'),");
             }
-            if (skippedPatients == sampleList.getSampleList().size()) {
+            if (skippedPatients == patientList.getPatientList().size()) {
                 return 0;
             }
             sql.deleteCharAt(sql.length()-1);
@@ -275,19 +275,19 @@ public class DaoSampleList {
 	/**
 	 * Given a patient list object (thus patient list id) gets patient list list.
 	 */
-	private ArrayList<String> getSampleListList(SampleList sampleList, Connection con) throws DaoException {
+	private ArrayList<String> getPatientListList(PatientList patientList, Connection con) throws DaoException {
 
         PreparedStatement pstmt  ;
         ResultSet rs = null;
         try {
             pstmt = con.prepareStatement
-                    ("SELECT * FROM sample_list_list WHERE LIST_ID = ?");
-            pstmt.setInt(1, sampleList.getSampleListId());
+                    ("SELECT * FROM patient_list_list WHERE LIST_ID = ?");
+            pstmt.setInt(1, patientList.getPatientListId());
             rs = pstmt.executeQuery();
             ArrayList<String> patientIds = new ArrayList<String>();
             while (rs.next()) {
                 // NOTE - as of 12/12/14, patient lists contain sample ids
-                Sample sample = DaoSample.getSampleById(rs.getInt("SAMPLE_ID"));
+                Sample sample = DaoSample.getSampleById(rs.getInt("PATIENT_ID"));
 				patientIds.add(sample.getStableId());
 			}
             return patientIds;
@@ -303,14 +303,14 @@ public class DaoSampleList {
 	/**
 	 * Given a result set, creates a patient list object.
 	 */
-    private SampleList extractSampleList(ResultSet rs) throws SQLException {
-        SampleList sampleList = new SampleList();
-        sampleList.setStableId(rs.getString("STABLE_ID"));
-        sampleList.setCancerStudyId(rs.getInt("CANCER_STUDY_ID"));
-        sampleList.setName(rs.getString("NAME"));
-        sampleList.setSampleListCategory(SampleListCategory.get(rs.getString("CATEGORY")));
-        sampleList.setDescription(rs.getString("DESCRIPTION"));
-        sampleList.setSampleListId(rs.getInt("LIST_ID"));
-        return sampleList;
+    private PatientList extractPatientList(ResultSet rs) throws SQLException {
+        PatientList patientList = new PatientList();
+        patientList.setStableId(rs.getString("STABLE_ID"));
+        patientList.setCancerStudyId(rs.getInt("CANCER_STUDY_ID"));
+        patientList.setName(rs.getString("NAME"));
+        patientList.setPatientListCategory(PatientListCategory.get(rs.getString("CATEGORY")));
+        patientList.setDescription(rs.getString("DESCRIPTION"));
+        patientList.setPatientListId(rs.getInt("LIST_ID"));
+        return patientList;
     }
 }

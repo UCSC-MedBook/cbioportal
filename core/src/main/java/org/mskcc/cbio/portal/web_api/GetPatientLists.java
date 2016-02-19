@@ -42,25 +42,25 @@ import java.util.ArrayList;
  *
  * @author Ethan Cerami.
  */
-public class GetSampleLists {
+public class GetPatientLists {
 
     /**
      * Gets all Patient Sets Associated with a specific Cancer Study.
      *
      * @param cancerStudyId Cancer Study ID.
-     * @return ArrayList of SampleSet Objects.
+     * @return ArrayList of PatientSet Objects.
      * @throws DaoException Database Error.
      */
-    public static ArrayList<SampleList> getSampleLists(String cancerStudyId)
+    public static ArrayList<PatientList> getPatientLists(String cancerStudyId)
             throws DaoException {
         CancerStudy cancerStudy = DaoCancerStudy.getCancerStudyByStableId(cancerStudyId);
         if (cancerStudy != null) {
-            DaoSampleList daoSampleList = new DaoSampleList();
-            ArrayList<SampleList> sampleList = daoSampleList.getAllSampleLists(cancerStudy.getInternalId());
-            return sampleList;
+            DaoPatientList daoPatientList = new DaoPatientList();
+            ArrayList<PatientList> patientList = daoPatientList.getAllPatientLists(cancerStudy.getInternalId());
+            return patientList;
         } else {
-            ArrayList<SampleList> sampleList = new ArrayList<SampleList>();
-            return sampleList;
+            ArrayList<PatientList> patientList = new ArrayList<PatientList>();
+            return patientList;
         }
     }
 
@@ -71,23 +71,23 @@ public class GetSampleLists {
      * @return Table output.
      * @throws DaoException Database Error.
      */
-    public static String getSampleListsAsTable(String cancerStudyStableId) throws DaoException {
+    public static String getPatientListsAsTable(String cancerStudyStableId) throws DaoException {
         CancerStudy cancerStudy = DaoCancerStudy.getCancerStudyByStableId(cancerStudyStableId);
         StringBuilder buf = new StringBuilder();
         if (cancerStudy != null) {
             int cancerStudyInternalId = cancerStudy.getInternalId();
-            DaoSampleList daoSampleList = new DaoSampleList();
-            ArrayList<SampleList> list = daoSampleList.getAllSampleLists(cancerStudyInternalId);
+            DaoPatientList daoPatientList = new DaoPatientList();
+            ArrayList<PatientList> list = daoPatientList.getAllPatientLists(cancerStudyInternalId);
             if (list.size() > 0) {
                 buf.append("case_list_id\tcase_list_name\tcase_list_description\t"
                         + "cancer_study_id\t" + "case_ids\n");
-                for (SampleList sampleList : list) {
-                    buf.append(sampleList.getStableId()).append("\t");
-                    buf.append(sampleList.getName()).append("\t");
-                    buf.append(sampleList.getDescription()).append("\t");
-                    buf.append(sampleList.getCancerStudyId()).append("\t");
-                    for (String aSample : sampleList.getSampleList()) {
-                        buf.append(aSample).append(" ");
+                for (PatientList patientList : list) {
+                    buf.append(patientList.getStableId()).append("\t");
+                    buf.append(patientList.getName()).append("\t");
+                    buf.append(patientList.getDescription()).append("\t");
+                    buf.append(patientList.getCancerStudyId()).append("\t");
+                    for (String aPatient : patientList.getPatientList()) {
+                        buf.append(aPatient).append(" ");
                     }
                     buf.append("\n");
                 }

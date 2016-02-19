@@ -39,7 +39,7 @@ import java.util.Map;
 /**
  * Enumeration for Patient List Controlled Vocabulary (CV) Category.
  */
-public enum SampleListCategory {
+public enum PatientListCategory {
     ALL_CASES_IN_STUDY("all_cases_in_study"),
     ALL_CASES_WITH_MUTATION_DATA("all_cases_with_mutation_data"),
     ALL_CASES_WITH_CNA_DATA("all_cases_with_cna_data"),
@@ -54,18 +54,18 @@ public enum SampleListCategory {
     OTHER("other");
 
     // Init the look up map.
-    private static final Map<String, SampleListCategory> lookup
-            = new HashMap<String, SampleListCategory>();
+    private static final Map<String, PatientListCategory> lookup
+            = new HashMap<String, PatientListCategory>();
 
     static {
-        for(SampleListCategory c : EnumSet.allOf(SampleListCategory.class))  {
+        for(PatientListCategory c : EnumSet.allOf(PatientListCategory.class))  {
             lookup.put(c.getCategory(), c);
         }
     }
 
     private String category;
 
-    private SampleListCategory(String category) {
+    private PatientListCategory(String category) {
         this.category = category;
     }
 
@@ -74,15 +74,15 @@ public enum SampleListCategory {
     /**
      * Gets the matching category by category name.
      * @param category  category name.
-     * @return SampleListCategory Object.
+     * @return PatientListCategory Object.
      */
-    public static SampleListCategory get(String category) {
-        SampleListCategory match = lookup.get(category);
+    public static PatientListCategory get(String category) {
+        PatientListCategory match = lookup.get(category);
         if (match != null) {
             return match;
         } else {
             StringBuffer validOptions = new StringBuffer();
-            for(SampleListCategory c : EnumSet.allOf(SampleListCategory.class))  {
+            for(PatientListCategory c : EnumSet.allOf(PatientListCategory.class))  {
                 validOptions.append(c.getCategory() + ", ");
             }
             String validStr = validOptions.substring(0, validOptions.length()-2) + ".";

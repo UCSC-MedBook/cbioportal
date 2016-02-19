@@ -34,28 +34,28 @@ package org.mskcc.cbio.portal.util;
 
 import org.mskcc.cbio.portal.dao.*;
 import org.mskcc.cbio.portal.model.*;
-import org.mskcc.cbio.portal.web_api.GetSampleLists;
+import org.mskcc.cbio.portal.web_api.GetPatientLists;
 
 import java.util.*;
 
 /**
- * Utility class for the user-defined sample sets (samplet ID list).
+ * Utility class for the user-defined patient sets (patient ID list).
  * 
  * @author Selcuk Onur Sumer
  */
-public class SampleSetUtil
+public class PatientSetUtil
 {
 	/**
-	 * Checks whether the provided sample IDs are valid for a specific
-	 * cancer study. This method returns a list of invalid samples if
-	 * any, or returns an empty list if all the samples are valid.
+	 * Checks whether the provided patient IDs are valid for a specific
+	 * cancer study. This method returns a list of invalid patients if
+	 * any, or returns an empty list if all the patients are valid.
 	 * 
 	 * @param studyId			stable cancer study id
-	 * @param sampleIds		sample IDs as a single string
-	 * @return					list of invalid samples
+	 * @param patientIds		patient IDs as a single string
+	 * @return					list of invalid patients
 	 * @throws DaoException		if a DB error occurs
 	 */
-	public static List<String> validateSampleSet(String studyId,
+	public static List<String> validatePatientSet(String studyId,
 			String sampleIds) throws DaoException
 	{
 		ArrayList<String> invalidSample = new ArrayList<String>();
@@ -67,7 +67,7 @@ public class SampleSetUtil
 		if (sampleIds != null)
 		{
                     
-			// validate each sample ID
+			// validate each patient ID
 			for(String sampleId: sampleIds.trim().split("\\s+"))
 			{
 				Sample sample = DaoSample.getSampleByCancerStudyAndSampleId(iStudyId, sampleId);
@@ -76,70 +76,70 @@ public class SampleSetUtil
 				{
 					invalidSample.add(sampleId);
 				}
-			}
-		}
+                            }
+				}
 		
 		return invalidSample;
 	}
 	
 	/**
-	 * Shortens the (possibly long) user-defined sample id list by hashing.
+	 * Shortens the (possibly long) user-defined patient id list by hashing.
 	 * Also adds the generated (key, text) pair to the database for
 	 * future reference.
 	 * 
-	 * @param sampleIds	sample ID string to be shortened
-	 * @return			short (hashed) version of sample IDs
+	 * @param patientIds	patient ID string to be shortened
+	 * @return			short (hashed) version of patient IDs
 	 * @throws DaoException 
 	 */
-	public static String shortenSampleIds(String sampleIds)
+	public static String shortenPatientIds(String patientIds)
 			throws DaoException
 	{
 		DaoTextCache dao = new DaoTextCache();
 		
-		// normalize sample IDs list to avoid redundant white spaces  
-		String normalizedIds = normalizeSampleIds(sampleIds);
+		// normalize patient IDs list to avoid redundant white spaces  
+		String normalizedIds = normalizePatientIds(patientIds);
 		
-		// generate hash key for the sample IDs string
-		String sampleIdsKey = dao.generateKey(normalizedIds);
+		// generate hash key for the patient IDs string
+		String patientIdsKey = dao.generateKey(normalizedIds);
 		
 		// add new key and list pair to DB if record does not exist
-		if (dao.getText(sampleIdsKey) == null)
+		if (dao.getText(patientIdsKey) == null)
 		{
-			dao.cacheText(sampleIdsKey, normalizedIds);
+			dao.cacheText(patientIdsKey, normalizedIds);
 		}
 		
 		// return hash key
-		return sampleIdsKey;
+		return patientIdsKey;
 	}
 	
 	/**
-	 * Retrieves the sample ID list corresponding to the given key.
+	 * Retrieves the patient ID list corresponding to the given key.
 	 * 
-	 * @param sampleIdsKey	key for a specific sample id list
-	 * @return				sample id list corresponding to the given key
+	 * @param patientIdsKey	key for a specific patient id list
+	 * @return				patient id list corresponding to the given key
 	 * @throws DaoException 
 	 */
-	public static String getSampleIds(String sampleIdsKey)
+	public static String getPatientIds(String patientIdsKey)
 			throws DaoException
 	{
 		DaoTextCache dao = new DaoTextCache();
 		
-		String sampleIds = dao.getText(sampleIdsKey);
+		String patientIds = dao.getText(patientIdsKey);
 		
-		return sampleIds;
+		return patientIds;
 	}
 	
 	/**
-	 * Normalize the given sample list by trimming and replacing any white space
-	 * character with single space. This is to prevent same sample lists 
+	 * Normalize the given patient list by trimming and replacing any white space
+	 * character with single space. This is to prevent same patient lists 
 	 * to be interpreted as different lists just because of the different white
 	 * space characters.
 	 * 
-	 * @param sampleIds	list of sample ids to be normalized
-	 * @return			normalized string with the same sample ids
+	 * @param patientIds	list of patient ids to be normalized
+	 * @return			normalized string with the same patient ids
 	 */
-	public static String normalizeSampleIds(String sampleIds)
+	public static String normalizePatientIds(String patientIds)
 	{
-		return sampleIds.trim().replaceAll("\\s", " ");
+		return patientIds.trim().replaceAll("\\s", " ");
 	}
 }

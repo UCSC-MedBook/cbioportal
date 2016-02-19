@@ -32,8 +32,6 @@
 
 package org.mskcc.cbio.portal.dao;
 
-import org.mskcc.cbio.portal.util.GlobalProperties;
-
 /**
  * Exception Occurred while reading/writing data to database.
  *
@@ -68,8 +66,6 @@ public class DaoException extends Exception {
      * @return Error Message String.I
      */
     public String getMessage() {
-        String dbVersion = DaoInfo.getVersion();
-        String portalDbVersion = GlobalProperties.getDbVersion();
-        return "Database Version: " + dbVersion + " Portal DB Version Expected: " + portalDbVersion + msg;
+        return msg;
     }
 }

@@ -90,26 +90,26 @@ getGeneticProfiles
 Optional: "study_id": Cancer study id
 	   "genetic_profile_ids": List of genetic profile ids
 
-/sampleLists
-getSampleLists
+/patientlists
+getPatientLists
 {
 	"id":"brca_tcga_pub_log2CNA",
 	"name":"Tumors log2 copy-number",
 	"description":"All tumors with log2 copy-number data (778 samples)",
 	"study_id":"brca_tcga_pub",
-	"sample_ids":["TCGA-A8-A06N","TCGA-A8-A06O","TCGA-A8-A06Q",...]
+	"patient_ids":["TCGA-A8-A06N","TCGA-A8-A06O","TCGA-A8-A06Q",...]
 }
 Optional: "study_id": Cancer study id
-	    "sample_list_ids": List of sample list ids
+	    "patient_list_ids": List of patient list ids
 
-/samples
-getSamples
+/patients
+getPatients
 {
 	"id":"TCGA-A2-A0T2",
 	"study_id":"brca_tcga_pub"
 }
 Required: "study_id": Cancer study id
-Optional: "sample_ids": List of sample ids
+Optional: "patient_ids": List of patient ids
 
 /geneticprofiledata
 getGeneticProfileData

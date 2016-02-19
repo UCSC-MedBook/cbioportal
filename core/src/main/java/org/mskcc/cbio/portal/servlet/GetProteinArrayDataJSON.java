@@ -74,8 +74,8 @@ public class GetProteinArrayDataJSON extends HttpServlet {
                           HttpServletResponse httpServletResponse) throws ServletException, IOException {
 
         String cancerStudyIdentifier = httpServletRequest.getParameter("cancer_study_id");
-        String sampleSetId = httpServletRequest.getParameter("case_set_id");
-        String sampleIdsKey = httpServletRequest.getParameter("case_ids_key");
+        String patientSetId = httpServletRequest.getParameter("case_set_id");
+        String patientIdsKey = httpServletRequest.getParameter("case_ids_key");
         String proteinArrayId = httpServletRequest.getParameter("protein_array_id");
 
         try {
@@ -85,18 +85,18 @@ public class GetProteinArrayDataJSON extends HttpServlet {
             int cancerStudyId = cancerStudy.getInternalId();
 
             //Get patient ID list
-            DaoSampleList daoSampleList = new DaoSampleList();
-            SampleList sampleList;
-            ArrayList<String> sampleIdList = new ArrayList<String>();
-            if (sampleSetId.equals("-1") && sampleIdsKey.length() != 0) {
-                String strSampleIds = SampleSetUtil.getSampleIds(sampleIdsKey);
-                String[] sampleArray = strSampleIds.split("\\s+");
-                for (String item : sampleArray) {
-                    sampleIdList.add(item);
+            DaoPatientList daoPatientList = new DaoPatientList();
+            PatientList patientList;
+            ArrayList<String> patientIdList = new ArrayList<String>();
+            if (patientSetId.equals("-1") && patientIdsKey.length() != 0) {
+                String strPatientIds = PatientSetUtil.getPatientIds(patientIdsKey);
+                String[] patientArray = strPatientIds.split("\\s+");
+                for (String item : patientArray) {
+                    patientIdList.add(item);
                 }
             } else {
-                sampleList = daoSampleList.getSampleListByStableId(sampleSetId);
-                sampleIdList = sampleList.getSampleList();
+                patientList = daoPatientList.getPatientListByStableId(patientSetId);
+                patientIdList = patientList.getPatientList();
             }
 
             //Get Protein Array Data and return JSON
@@ -104,7 +104,7 @@ public class GetProteinArrayDataJSON extends HttpServlet {
             DaoProteinArrayData daoPAD = DaoProteinArrayData.getInstance();
             // NOTE - as of 12/12/14, patient lists contain sample ids
             for (ProteinArrayData pad : daoPAD.getProteinArrayData(cancerStudyId, proteinArrayId,
-                                                                    InternalIdUtil.getInternalNonNormalSampleIds(cancerStudyId, sampleIdList))) {
+                                                                    InternalIdUtil.getInternalNonNormalSampleIds(cancerStudyId, patientIdList))) {
                 Sample s = DaoSample.getSampleById(pad.getSampleId());
                 result.put(s.getStableId(), pad.getAbundance());
             }

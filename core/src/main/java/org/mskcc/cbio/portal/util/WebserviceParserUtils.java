@@ -58,29 +58,31 @@ public final class WebserviceParserUtils {
      */
     public static ArrayList<String> getSampleIds(HttpServletRequest request) throws ProtocolException,
             DaoException {
-        String samples = request.getParameter(WebService.CASE_LIST);
-        String sampleSetId = request.getParameter(WebService.CASE_SET_ID);
-        String sampleIdsKey = request.getParameter(WebService.CASE_IDS_KEY);
+        String patients = request.getParameter(WebService.CASE_LIST);
+        String patientSetId = request.getParameter(WebService.CASE_SET_ID);
+        String patientIdsKey = request.getParameter(WebService.CASE_IDS_KEY);
+        String samples = request.getParameter("samples");
 
-        if (sampleIdsKey != null)
+        if (patients == null &&
+        	patientIdsKey != null)
         {
-        	samples = SampleSetUtil.getSampleIds(sampleIdsKey);
+        	patients = PatientSetUtil.getPatientIds(patientIdsKey);
         }
 
-        ArrayList<String> sampleList = new ArrayList<String>();
-        if (sampleSetId != null && !(sampleSetId.equals("-1"))) {
-            DaoSampleList dao = new DaoSampleList();
-            SampleList selectedSampleList = dao.getSampleListByStableId(sampleSetId);
-            if (selectedSampleList == null) {
-                throw new ProtocolException("Invalid " + WebService.CASE_SET_ID + ":  " + sampleSetId + ".");
+        ArrayList<String> patientList = new ArrayList<String>();
+        if (patientSetId != null && !(patientSetId.equals("-1"))) {
+            DaoPatientList dao = new DaoPatientList();
+            PatientList selectedPatientList = dao.getPatientListByStableId(patientSetId);
+            if (selectedPatientList == null) {
+                throw new ProtocolException("Invalid " + WebService.CASE_SET_ID + ":  " + patientSetId + ".");
             }
-            sampleList = selectedSampleList.getSampleList();
+            patientList = selectedPatientList.getPatientList();
         }
-        else if (samples != null) {
-            for (String _sample : samples.split("[\\s,]+")) {
-                _sample = _sample.trim();
-                if (_sample.length() == 0) continue;
-                sampleList.add(_sample);
+        else if (patients != null) {
+            for (String _patient : patients.split("[\\s,]+")) {
+                _patient = _patient.trim();
+                if (_patient.length() == 0) continue;
+                patientList.add(_patient);
             }
         }
         else if (samples != null) {     // todo: this is a hack, samples is just another word for patients
@@ -89,7 +91,7 @@ public final class WebserviceParserUtils {
         else {
             throw new ProtocolException(WebService.CASE_SET_ID + " or " + WebService.CASE_LIST + " must be specified.");
         }
-        return sampleList;
+        return patientList;
     }
 
     /**
@@ -141,14 +143,14 @@ public final class WebserviceParserUtils {
         }
 
         // a patient_set_id is explicitly provided, as in getProfileData, getMutationData, getClinicalData, etc.
-        String sampleSetId = request.getParameter(WebService.CASE_SET_ID);
-        if (sampleSetId != null) {
-            DaoSampleList aDaoSampleList = new DaoSampleList();
-            SampleList aSampleList = aDaoSampleList.getSampleListByStableId(sampleSetId);
+        String patientSetId = request.getParameter(WebService.CASE_SET_ID);
+        if (patientSetId != null) {
+            DaoPatientList aDaoPatientList = new DaoPatientList();
+            PatientList aPatientList = aDaoPatientList.getPatientListByStableId(patientSetId);
             
-            if (aSampleList != null && DaoCancerStudy.doesCancerStudyExistByInternalId(aSampleList.getCancerStudyId())) {
+            if (aPatientList != null && DaoCancerStudy.doesCancerStudyExistByInternalId(aPatientList.getCancerStudyId())) {
                 cancerStudies.add(DaoCancerStudy.getCancerStudyByInternalId
-                        (aSampleList.getCancerStudyId()).getCancerStudyStableId());
+                        (aPatientList.getCancerStudyId()).getCancerStudyStableId());
             } 
             
             return cancerStudies;

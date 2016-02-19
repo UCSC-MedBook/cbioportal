@@ -66,6 +66,7 @@ public class GeneticAlterationUtil {
     {
         ArrayList<String> dataRow = new ArrayList<String>();
         DaoGeneticAlteration daoGeneticAlteration = DaoGeneticAlteration.getInstance();
+        DaoMicroRnaAlteration daoMicroRnaAlteration = DaoMicroRnaAlteration.getInstance();
 
         //  First branch:  are we dealing with a canonical (protein-coding) gene or a microRNA?
         if (targetGene instanceof CanonicalGene) {
@@ -93,6 +94,21 @@ public class GeneticAlterationUtil {
 
             //  Iterate through all samples in the profile
             for (Integer sampleId:  targetSampleList) {
+                String value = sampleMap.get(sampleId);
+                if (value == null) {
+                    dataRow.add (NAN);
+                } else {
+                    dataRow.add (value);
+                }
+            }
+        }
+        else if (targetGene instanceof MicroRna) {
+            MicroRna microRna = (MicroRna) targetGene;
+            HashMap<Integer, String> sampleMap = daoMicroRnaAlteration.getMicroRnaAlterationMap
+                    (targetGeneticProfile.getGeneticProfileId(), microRna.getMicroRnaId());
+
+            //  Iterate through all samples in the profile
+            for (Integer sampleId :  targetSampleList) {
                 String value = sampleMap.get(sampleId);
                 if (value == null) {
                     dataRow.add (NAN);
